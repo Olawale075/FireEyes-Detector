@@ -1,7 +1,7 @@
-// User Entity (Users.java)
 package sms.com.sms.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
@@ -14,26 +14,27 @@ import sms.com.sms.enums.UserRole;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
 @Data
-@EqualsAndHashCode(exclude = "gasDetectors") // 🔥 prevents recursion
-@ToString(exclude = "gasDetectors") // Optional: avoids infinite loop in logs
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(exclude = "gasDetectors")
+@ToString(exclude = "gasDetectors")
 @Entity
 @DynamicUpdate
-
-@Getter
-@Setter
 @Table(name = "users")
 public class Users implements UserDetails {
-    @Id
-    @Column(unique = true, nullable = false)
-    private String phonenumber;
 
+    @Id
+    @Column(name = "phone_number", nullable = false, unique = true)
+    @NotNull
+    private String phoneNumbers;
+
+    @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
@@ -55,8 +56,8 @@ public class Users implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_gas_detector",
-        joinColumns = @JoinColumn(name = "user_phonenumber", referencedColumnName = "phonenumber"),
-        inverseJoinColumns = @JoinColumn(name = "gas_detector_mac", referencedColumnName = "macAddress")
+        joinColumns = @JoinColumn(name = "user_phonenumber", referencedColumnName = "phone_number"),
+        inverseJoinColumns = @JoinColumn(name = "gas_detector_mac", referencedColumnName = "mac_address")
     )
     private Set<GasDetector> gasDetectors = new HashSet<>();
 
@@ -66,19 +67,50 @@ public class Users implements UserDetails {
     }
 
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createDateTime;
-
+    public String getPhoneNumbers() {
+        return phoneNumbers;
+    }
+    
     @UpdateTimestamp
     private LocalDateTime updateDateTime;
 
+    // --- Manually added methods used in controller/service ---
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
+
+    public void setPhoneNumbers(String phoneNumbers) {
+        this.phoneNumbers = phoneNumbers;
+    }
+
+    public Set<GasDetector> getGasDetectors() {
+        return gasDetectors;
+    }
+
+    // --- Spring Security UserDetails Implementation ---
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
+     public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
     @Override
     public String getUsername() {
-        return phonenumber;
+        return phoneNumbers;
     }
 
     @Override
@@ -100,4 +132,22 @@ public class Users implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+  
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
 }

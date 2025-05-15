@@ -2,6 +2,7 @@ package sms.com.sms.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,9 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sms.com.sms.dto.DetectorDTO;
-import sms.com.sms.dto.UserDTO;
-import sms.com.sms.mapper.DetectorMapper;
+// import sms.com.sms.dto.DetectorDTO;
+// // import sms.com.sms.dto.UserDTO;
+// import sms.com.sms.mapper.DetectorMapper;
 import sms.com.sms.model.GasDetector;
 import sms.com.sms.model.Users;
 import sms.com.sms.repository.GasDetectorRepository;
@@ -32,11 +33,7 @@ public class GasDetectorService {
 
     @Autowired
     private UsersRepository usersRepository;
-    @Autowired
-    private  DetectorMapper detectorMapper;
-    /**
-     * Assign a gas detector to a user.
-     */
+    
     public String assignDetectorToUser(String phoneNumber, String macAddress) {
         // logger.info("Assigning detector [{}] to user [{}]", macAddress, phoneNumber);
 
@@ -59,15 +56,19 @@ public class GasDetectorService {
     /**
      * Get a gas detector by its MAC address.
      */
-    public Optional<GasDetector> getDetector(String macAddress) {
-        Optional<GasDetector> detector = gasDetectorRepository.findById(macAddress);
+    public ResponseEntity<GasDetector> getDetector(String macAddress) {
+       try {
+        ResponseEntity<GasDetector> detector = gasDetectorRepository.findByMacAddress(macAddress);
 
-        if (detector.isEmpty()) {
+        if (detector == null) {
             logger.warn("Gas detector with MAC address [{}] not found", macAddress);
             throw new RuntimeException("MAC address not found");
         }
 
         return detector;
+       } catch (Exception e) {
+        throw new RuntimeException("MAC address not found"+ e.getMessage());
+       } 
     }
 
     /**
@@ -89,11 +90,11 @@ public class GasDetectorService {
      * Get all gas detectors (for authenticated admins).
      */
  
-     public List<DetectorDTO> getAllGasDetectors() {
-        List<GasDetector> gasDetector = gasDetectorRepository.findAll();
-        return gasDetector.stream()
-                .map(detectorMapper::toDto)  // ✅ use instance, not class
-                .toList();
+     public List<GasDetector> getAllGasDetectors() {
+        List<GasDetector> gasDetectors = gasDetectorRepository.findAll();
+        return gasDetectors; // ✅ Collect the results correctly
     }
+    
+
     }
 

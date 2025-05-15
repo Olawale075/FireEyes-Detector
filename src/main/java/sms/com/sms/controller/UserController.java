@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import sms.com.sms.config.JwtUtil;
 import sms.com.sms.dto.AuthRequest;
 import sms.com.sms.dto.AuthResponse;
-import sms.com.sms.dto.UserDTO;
+//  import sms.com.sms.dto.UserDTO;
 import sms.com.sms.model.Users;
 import sms.com.sms.repository.UsersRepository;
 import sms.com.sms.service.OTPService;
@@ -33,48 +33,63 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @SecurityRequirement(name = "bearerAuth")
 @CrossOrigin("*")
 @RequestMapping("/user")
-@RequiredArgsConstructor
 public class UserController {
 
     private final UserServiceImpl service;
-    private UsersRepository usersRepository;
+    private final UsersRepository usersRepository;
     private final OTPService otpService;
     private final AuthenticationManager authenticationManager;
 
+    private final JwtUtil jwtUtil;
     @Autowired
-    private JwtUtil jwtUtil;
-
+    public UserController(
+        UserServiceImpl service,
+        UsersRepository usersRepository,
+        OTPService otpService,
+        AuthenticationManager authenticationManager,
+        JwtUtil jwtUtil
+    ) {
+        this.service = service;
+        this.usersRepository = usersRepository;
+        this.otpService = otpService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+    }
     private final AtomicInteger validatedUsersCount = new AtomicInteger(0);
     private static final int MAX_VALIDATED_USERS = 20;
 
     /** Get all users */
     @GetMapping("/admin/")
-    public List<UserDTO> getAllUsers() {
+    public List<Users> getAllUsers() {
         return service.getAllUsersWithGasDetectors();
     }
 
-    @GetMapping("/admin/page")
-    public Page<UserDTO> getAllUsers(Pageable pageable) {
-        return service.getAllUsers(pageable);
+    //  @GetMapping("/admin/page")
+    //  public Page<UserDTO> getAllUsers(Pageable pageable) {
+    // //     return service.getAllUsers(pageable);
 
-    }
+ 
 
     /** Get logged-in user details */
-    @GetMapping("/admin/details")
+   @GetMapping("/admin/details")
 
-    public ResponseEntity<UserDTO> getUserDTO() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+   public ResponseEntity<Users> getUsers() {
+       Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (principal instanceof UserDTO) {
-            return ResponseEntity.ok((UserDTO) principal);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
+       if (principal instanceof Users) {
+           return ResponseEntity.ok((Users) principal);
+       } else {
+           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+       }
+     }
 
     /** Register a new user */
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Users user) {
+        if (user.getPhoneNumbers() == null || user.getPhoneNumbers().isEmpty()) {
+            return ResponseEntity.badRequest().body("Phone numbers is required.");
+        }
+        
         String result = service.register(user);
         return ResponseEntity.ok(result);
     }
@@ -145,17 +160,17 @@ public class UserController {
     /** Validate OTP and register user */
     @PostMapping("/validate-otp")
     public ResponseEntity<String> validateOtp(@RequestBody Users details) {
-        String phoneNumber = details.getPhonenumber().trim();
-        if (!phoneNumber.startsWith("+234")) {
-            phoneNumber = "+234" + phoneNumber.replaceFirst("^0", "");
+        String phoneNumbers = details.getPhoneNumbers().trim();
+        if (!phoneNumbers.startsWith("+234")) {
+            phoneNumbers = "+234" + phoneNumbers.replaceFirst("^0", "");
         }
-        details.setPhonenumber(phoneNumber);
+        details.setPhoneNumbers(phoneNumbers);
 
-        if (details.getOtp() == null || details.getPhonenumber() == null) {
-            return ResponseEntity.badRequest().body("OTP and phone number are required");
+        if (details.getOtp() == null || details.getPhoneNumbers() == null) {
+            return ResponseEntity.badRequest().body("OTP and phone numbers are required");
         }
 
-        boolean isValid = otpService.validateOtp(details.getPhonenumber(), details.getOtp());
+        boolean isValid = otpService.validateOtp(details.getPhoneNumbers(), details.getOtp());
         if (isValid) {
             service.saveUser(details);
             return ResponseEntity.ok("User registered successfully.");
@@ -164,34 +179,34 @@ public class UserController {
         }
     }
 
-    /** Get user details by phone number */
-    @GetMapping("/{phonenumber}")
+    /** Get user details by phone numbers */
+    @GetMapping("/{phoneNumbers}")
 
-    public ResponseEntity<UserDTO> getReceiverByPhoneNumber(@PathVariable String phonenumber) {
-        UserDTO details = service.getDetails(phonenumber);
+    public ResponseEntity<Users> getReceiverByPhoneNumbers(@PathVariable String phoneNumbers) {
+        Users details = service.getDetails(phoneNumbers);
         return ResponseEntity.ok(details);
-    }
+     }
 
     /** Update user details */
-    @PutMapping("/admin/{phonenumber}/update/toheeb")
+    @PutMapping("/admin/{phoneNumbers}/update/toheeb")
 
-    public ResponseEntity<Users> updateReceiverDetails(@PathVariable String phonenumber,
+    public ResponseEntity<Users> updateReceiverDetails(@PathVariable String phoneNumbers,
             @RequestBody Users newDetails) {
-        Users updatedDetails = service.updateProduct(phonenumber, newDetails);
+        Users updatedDetails = service.updateProduct(phoneNumbers, newDetails);
         return ResponseEntity.ok(updatedDetails);
     }
 
-    /** Delete user by phone number */
-    @DeleteMapping("admin/{phonenumber}")
+    /** Delete user by phone numbers */
+    @DeleteMapping("admin/{phoneNumbers}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<String> deleteReceiver(@PathVariable String phonenumber) {
-        service.deletes(phonenumber);
+    public ResponseEntity<String> deleteReceiver(@PathVariable String phoneNumbers) {
+        service.deletes(phoneNumbers);
         return ResponseEntity.ok("Receiver deleted successfully.");
     }
-    // @GetMapping("/{phone}")
-    // public Users getUserWithDetectors(@PathVariable String phone) {
-    // Users user = usersRepository.findById(phone)
-    // .orElseThrow(() -> new RuntimeException("User not found"));
-    // return user;
-    // }
+    @GetMapping("/{phone}")
+    public Users getUserWithDetectors(@PathVariable String phone) {
+    Users user = usersRepository.findById(phone)
+    .orElseThrow(() -> new RuntimeException("User not found"));
+    return user;
+    }
 }

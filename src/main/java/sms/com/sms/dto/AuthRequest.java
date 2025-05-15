@@ -10,6 +10,19 @@ import lombok.NoArgsConstructor;
 public class AuthRequest {
     private String phoneNumber;
     private String password;
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-    // Getters and Setters
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password =password;
+}
 }

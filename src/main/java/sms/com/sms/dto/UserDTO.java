@@ -1,21 +1,21 @@
-package sms.com.sms.dto;
+// package sms.com.sms.dto;
 
-import lombok.Data;
-import sms.com.sms.enums.NotificationPreference;
-import sms.com.sms.enums.UserRole;
+// import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.Set;
+// import java.util.Set;
 
-@Data
-public class UserDTO {
-    private String phonenumber;
-    private String name;
-    private String email;
-    private Boolean isVerified;
-    private UserRole role;
-    private NotificationPreference notificationPreference;
-    private LocalDateTime createDateTime;
-    private LocalDateTime updateDateTime;
-    private Set<String> gasDetectorMacs; // Just MAC addresses, not full objects
-}
+// @Data
+// @NoArgsConstructor
+// @AllArgsConstructor
+// @Builder
+// public class UserDTO {
+//     private String phonenumber;
+//     private String name;
+//     private String email;
+//     private Boolean isVerified;
+//     private String role;
+//     private String notificationPreference;
+
+//     // This must exist exactly like this
+//     private Set<String> gasDetectorMacs;
+// }

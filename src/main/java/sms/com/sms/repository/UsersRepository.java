@@ -14,15 +14,15 @@ import sms.com.sms.model.Users;
 @EnableJpaRepositories
 public interface UsersRepository extends JpaRepository<Users, String> {
 
-  boolean existsByPhonenumber(String phonenumber);
+  boolean existsByPhoneNumbers(String phoneNumbers);
 
-  // // @Query("SELECT u FROM Users u LEFT JOIN FETCH u.gasDetectors WHERE u.phonenumber = :phonenumber")
-  // Users findByPhonenumberWithDetectors(@Param("phonenumber") String phonenumber);
+  // // @Query("SELECT u FROM Users u LEFT JOIN FETCH u.gasDetectors WHERE u.phoneNumber = :phoneNumber")
+  // Users findByphoneNumberWithDetectors(@Param("phoneNumber") String phoneNumber);
   
 
     // @EntityGraph(attributePaths = "gasDetectors")
-    // Users findByPhonenumber(String phonenumber);
-    // // @Query("SELECT u FROM Users u LEFT JOIN FETCH u.gasDetectors ugd LEFT JOIN FETCH ugd.gasDetector WHERE u.phonenumber = :phonenumber")
+    // Users findByphoneNumber(String phoneNumber);
+    // // @Query("SELECT u FROM Users u LEFT JOIN FETCH u.gasDetectors ugd LEFT JOIN FETCH ugd.gasDetector WHERE u.phoneNumber = :phoneNumber")
     // Optional<Users> findWithGasDetectors(@Param("phone") String phone);
     
 }

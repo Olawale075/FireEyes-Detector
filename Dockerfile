@@ -1,15 +1,26 @@
-# Stage 1: Build
-FROM maven:3.9.4-eclipse-temurin-17-alpine as builder
+# # Use Maven image to build the application
+FROM maven:3.9.5-eclipse-temurin-17 AS builder
+
 WORKDIR /app
+
+# Copy only pom.xml first to cache dependencies
 COPY pom.xml .
-RUN mvn dependency:go-offline -B
+
+RUN mvn dependency:go-offline
+
+# Now copy the rest of the source code
 COPY src ./src
+
+# Build the application
 RUN mvn clean package -DskipTests
 
-# Stage 2: Runtime
-FROM openjdk:17-alpine
-WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-Xmx256m", "-Xms128m", "-jar", "app.jar"]
+# Use a smaller image to run the app
+FROM eclipse-temurin:17-jdk-alpine
 
+WORKDIR /app
+
+COPY --from=builder /app/target/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

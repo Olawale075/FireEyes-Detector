@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import lombok.RequiredArgsConstructor;
-import sms.com.sms.dto.DetectorDTO;
+// import sms.com.sms.dto.DetectorDTO;
 import sms.com.sms.model.GasDetector;
 import sms.com.sms.model.Users;
 import sms.com.sms.service.GasDetectorService;
@@ -22,7 +22,7 @@ import sms.com.sms.service.GasDetectorService;
 @RestController
 @RequestMapping("/gas-detectors")
 @CrossOrigin("*")
-@RequiredArgsConstructor
+
 
 @SecurityRequirement(name = "bearerAuth")
 @PreAuthorize("hasAuthority('ROLE_ADMIN')") // Applies to all methods unless overridden
@@ -31,6 +31,11 @@ public class RegisterGasDetector {
     @Autowired
     private final GasDetectorService gasDetectorService;
 
+    public RegisterGasDetector(GasDetectorService gasDetectorService) {
+        this.gasDetectorService = gasDetectorService;
+    }
+    
+    
     @Operation(summary = "Assign detector to user")
     @PostMapping("/admin/assign")
     public ResponseEntity<String> assignDetector(
@@ -42,7 +47,7 @@ public class RegisterGasDetector {
 
     @Operation(summary = "Get gas detector by MAC address")
     @GetMapping("/admin/getDetector")
-    public  Optional<GasDetector> getDetector(@RequestParam String macAddress) {
+    public  ResponseEntity<GasDetector> getDetector(@RequestParam String macAddress) {
         return gasDetectorService.getDetector(macAddress);
     }
 
@@ -65,7 +70,7 @@ public class RegisterGasDetector {
     })
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @GetMapping("/all")
-    public List<DetectorDTO> getAllGasDetectors() {
+    public List<GasDetector> getAllGasDetectors() {
         return gasDetectorService.getAllGasDetectors();
     }
     

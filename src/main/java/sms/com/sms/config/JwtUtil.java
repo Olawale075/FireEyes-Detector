@@ -11,7 +11,7 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "RbthOApwUHf33z9v2uR/eNpNUvv3zczUh/ffaMJx8YU="; // Use a strong secret key
+    private String SECRET_KEY = "RbthOApwUHf33z9v2uR/eNpNUvv3zczUh/ffaMJx8YU="; // Use a strong secret key
 
     public String generateToken(String username) { // ✅ Pass username (phone number)
         return Jwts.builder()

@@ -18,12 +18,19 @@ import sms.com.sms.service.UserService;
 import sms.com.sms.service.UserServiceImpl;
 
 @Component
-@RequiredArgsConstructor  // ✅ This ensures dependencies are injected automatically
+//@RequiredArgsConstructor  // ✅ This ensures dependencies are injected automatically
 public class JwtFilter extends OncePerRequestFilter {
 
     private final UserService userDetailsService;
  // ✅ Injected via constructor
     private final JwtUtil jwtUtil;  // ✅ Injected via constructor
+
+  
+
+    public JwtFilter( UserService userDetailsService, JwtUtil jwtUtil) {
+        this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
+    }
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {

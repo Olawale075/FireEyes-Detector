@@ -1,22 +1,15 @@
-package sms.com.sms.mapper;
+// package sms.com.sms.mapper;
 
-import org.mapstruct.*;
-import sms.com.sms.dto.UserDTO;
-import sms.com.sms.model.GasDetector;
-import sms.com.sms.model.Users;
+// import org.mapstruct.Mapper;
+// import org.mapstruct.Mapping;
+// import sms.com.sms.dto.UserDTO;
+// import sms.com.sms.model.Users;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+// import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
-public interface UserMapper {
+// @Mapper(componentModel = "spring")
+// public interface UserMapper {
 
-    @Mapping(target = "gasDetectorMacs", expression = "java(mapGasDetectorMacs(user.getGasDetectors()))")
-    UserDTO toDto(Users user);
-
-    default Set<String> mapGasDetectorMacs(Set<GasDetector> gasDetectors) {
-        return gasDetectors.stream()
-                .map(GasDetector::getMacAddress)
-                .collect(Collectors.toSet());
-    }
-}
+//     @Mapping(target = "gasDetectorMacs", expression = "java(user.getGasDetectors().stream().map(detector -> detector.getMacAddress()).collect(Collectors.toSet()))")
+//     UserDTO toDto(Users user);  // ✅ this must match what your service calls
+// }

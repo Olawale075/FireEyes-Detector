@@ -2,18 +2,19 @@ package sms.com.sms.service;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import sms.com.sms.dto.UserDTO;
+// import sms.com.sms.dto.UserDTO;
+// import sms.com.sms.dto.UserDTO;
 import sms.com.sms.model.Users;
 import java.util.List;
 
 public interface UserService extends UserDetailsService {
-    boolean isPhoneNumberRegistered(String phonenumber);
+    boolean isPhoneNumbersRegistered(String phoneNumbers);
     void saveTempUser(Users user);
-    Users findTempUser(String phonenumber);
+    Users findTempUser(String phoneNumbers);
     Users saveUser(Users user);
     String register(Users details);
-    void deletes(String phonenumber);
+    void deletes(String phoneNumbers);
     //List<Users> getAllDetails();
-    UserDTO getDetails(String phonenumber);
-    Users updateProduct(String phonenumber, Users newDetails);
+     Users getDetails(String phoneNumbers);
+    Users updateProduct(String phoneNumbers, Users newDetails);
 }
