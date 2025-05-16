@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,15 +23,10 @@ import sms.com.sms.service.UserServiceImpl;
 @Component
 //@RequiredArgsConstructor  // ✅ This ensures dependencies are injected automatically
 public class JwtFilter extends OncePerRequestFilter {
-    
-    private final UserService userDetailsService;
- // ✅ Injected via constructor
- 
-    private final JwtUtil jwtUtil;  // ✅ Injected via constructor
+ private final UserDetailsService userDetailsService;
+    private final JwtUtil jwtUtil;
 
-  
-
-    public JwtFilter( UserService userDetailsService, JwtUtil jwtUtil) {
+    public JwtFilter(@Lazy UserDetailsService userDetailsService, JwtUtil jwtUtil) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
     }

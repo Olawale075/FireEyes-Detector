@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,9 @@ import sms.com.sms.repository.UsersRepository;
 import java.util.*;
 
 @Service
-public class UserServiceImpl implements UserService {
 
+public class UserServiceImpl implements UserService{
+    
     private final UsersRepository repository;
     private final PasswordEncoder passwordEncoder;
 
