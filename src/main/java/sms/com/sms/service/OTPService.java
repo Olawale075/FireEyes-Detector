@@ -9,11 +9,11 @@ import java.util.Map;
 public class OTPService {
     private final Map<String, String> otpStorage = new HashMap<>();
 
-    public void storeOtp(String phoneNumber, String otp) {
-        otpStorage.put(phoneNumber, otp);
+    public void storeOtp(String phonenumber, String otp) {
+        otpStorage.put(phonenumber, otp);
     }
 
-    public boolean validateOtp(String phoneNumber, Object otp) {
-        return otp.equals(otpStorage.get(phoneNumber));
+    public boolean validateOtp(String phonenumber, Object otp) {
+        return otp.equals(otpStorage.get(phonenumber));
     }
 }

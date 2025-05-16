@@ -29,7 +29,7 @@ public class Users implements UserDetails {
     @Id
     @Column(name = "phone_number", nullable = false, unique = true)
     @NotNull
-    private String phoneNumbers;
+    private String phonenumber;
 
     @Column(nullable = false)
     private String name;
@@ -69,8 +69,8 @@ public class Users implements UserDetails {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createDateTime;
-    public String getPhoneNumbers() {
-        return phoneNumbers;
+    public String getPhonenumber() {
+        return phonenumber;
     }
     
     @UpdateTimestamp
@@ -86,8 +86,8 @@ public class Users implements UserDetails {
         this.otp = otp;
     }
 
-    public void setPhoneNumbers(String phoneNumbers) {
-        this.phoneNumbers = phoneNumbers;
+    public void setPhonenumber(String phonenumber) {
+        this.phonenumber = phonenumber;
     }
 
     public Set<GasDetector> getGasDetectors() {
@@ -110,7 +110,7 @@ public class Users implements UserDetails {
 
     @Override
     public String getUsername() {
-        return phoneNumbers;
+        return phonenumber;
     }
 
     @Override

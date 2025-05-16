@@ -14,7 +14,7 @@ import sms.com.sms.model.Users;
 @EnableJpaRepositories
 public interface UsersRepository extends JpaRepository<Users, String> {
 
-  boolean existsByPhoneNumbers(String phoneNumbers);
+  boolean existsByPhonenumber(String phonenumber);
 
   // // @Query("SELECT u FROM Users u LEFT JOIN FETCH u.gasDetectors WHERE u.phoneNumber = :phoneNumber")
   // Users findByphoneNumberWithDetectors(@Param("phoneNumber") String phoneNumber);

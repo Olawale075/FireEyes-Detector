@@ -8,13 +8,13 @@ import sms.com.sms.model.Users;
 import java.util.List;
 
 public interface UserService extends UserDetailsService {
-    boolean isPhoneNumbersRegistered(String phoneNumbers);
+    boolean isPhonenumberRegistered(String phonenumber);
     void saveTempUser(Users user);
-    Users findTempUser(String phoneNumbers);
+    Users findTempUser(String phonenumber);
     Users saveUser(Users user);
     String register(Users details);
-    void deletes(String phoneNumbers);
+    void deletes(String phonenumber);
     //List<Users> getAllDetails();
-     Users getDetails(String phoneNumbers);
-    Users updateProduct(String phoneNumbers, Users newDetails);
+     Users getDetails(String phonenumber);
+    Users updateProduct(String phonenumber, Users newDetails);
 }

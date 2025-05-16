@@ -31,24 +31,24 @@ public class UserServiceImpl implements UserService {
     private final Map<String, Users> tempUserStorage = new HashMap<>();
 
     @Override
-    public boolean isPhoneNumbersRegistered(String phoneNumbers) {
-        return repository.existsById(phoneNumbers);
+    public boolean isPhonenumberRegistered(String phonenumber) {
+        return repository.existsById(phonenumber);
     }
 
     @Override
     public void saveTempUser(Users user) {
-        tempUserStorage.put(user.getPhoneNumbers(), user);
+        tempUserStorage.put(user.getPhonenumber(), user);
     }
 
     @Override
-    public Users findTempUser(String phoneNumbers) {
-        return tempUserStorage.get(phoneNumbers);
+    public Users findTempUser(String phonenumber) {
+        return tempUserStorage.get(phonenumber);
     }
 
     @Override
     @Transactional
     public Users saveUser(Users user) {
-        if (user.getPhoneNumbers() == null) {
+        if (user.getPhonenumber() == null) {
             throw new IllegalArgumentException("Phone number is required");
         }
         return repository.save(user);
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public String register(Users details) {
-        if (isPhoneNumbersRegistered(details.getPhoneNumbers())) {
+        if (isPhonenumberRegistered(details.getPhonenumber())) {
             return "Phone number already registered.";
         }
 
@@ -80,7 +80,7 @@ public class UserServiceImpl implements UserService {
                 : "ROLE_" + user.getRole().name();
 
         return org.springframework.security.core.userdetails.User
-                .withUsername(user.getPhoneNumbers())
+                .withUsername(user.getPhonenumber())
                 .password(user.getPassword())
                 .authorities(new SimpleGrantedAuthority(role))
                 .build();
@@ -88,20 +88,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deletes(String phoneNumbers) {
-        Users details = repository.findById(phoneNumbers)
+    public void deletes(String phonenumber) {
+        Users details = repository.findById(phonenumber)
                 .orElseThrow(() -> new ResourceNotFoundException("User with phone number not found"));
         repository.delete(details);
     }
 
     @Override
     @Transactional
-    public Users updateProduct(String phoneNumbers, Users newDetails) {
-        Users existingDetails = repository.findById(phoneNumbers)
+    public Users updateProduct(String phonenumber, Users newDetails) {
+        Users existingDetails = repository.findById(phonenumber)
                 .orElseThrow(() -> new ResourceNotFoundException("User with phone number not found"));
 
         existingDetails.setName(newDetails.getName());
-        existingDetails.setPhoneNumbers(newDetails.getPhoneNumbers());
+        existingDetails.setPhonenumber(newDetails.getPhonenumber());
 
         return repository.save(existingDetails);
     }
@@ -121,9 +121,9 @@ public class UserServiceImpl implements UserService {
     //  }
 
 
-     public Users getDetails(String phoneNumbers) {
-         Users UserD = repository.findById(phoneNumbers)
-                 .orElseThrow(() -> new ResourceNotFoundException("User with phone number " + phoneNumbers + " not found"));
+     public Users getDetails(String phonenumber) {
+         Users UserD = repository.findById(phonenumber)
+                 .orElseThrow(() -> new ResourceNotFoundException("User with phone number " + phonenumber + " not found"));
          return UserD;
      }
     

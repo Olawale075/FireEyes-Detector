@@ -41,20 +41,21 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtil jwtUtil;
+
     @Autowired
     public UserController(
-        UserServiceImpl service,
-        UsersRepository usersRepository,
-        OTPService otpService,
-        AuthenticationManager authenticationManager,
-        JwtUtil jwtUtil
-    ) {
+            UserServiceImpl service,
+            UsersRepository usersRepository,
+            OTPService otpService,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil) {
         this.service = service;
         this.usersRepository = usersRepository;
         this.otpService = otpService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
+
     private final AtomicInteger validatedUsersCount = new AtomicInteger(0);
     private static final int MAX_VALIDATED_USERS = 20;
 
@@ -64,32 +65,30 @@ public class UserController {
         return service.getAllUsersWithGasDetectors();
     }
 
-    //  @GetMapping("/admin/page")
-    //  public Page<UserDTO> getAllUsers(Pageable pageable) {
-    // //     return service.getAllUsers(pageable);
-
- 
+    // @GetMapping("/admin/page")
+    // public Page<UserDTO> getAllUsers(Pageable pageable) {
+    // // return service.getAllUsers(pageable);
 
     /** Get logged-in user details */
-   @GetMapping("/admin/details")
+    @GetMapping("/admin/details")
 
-   public ResponseEntity<Users> getUsers() {
-       Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public ResponseEntity<Users> getUsers() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-       if (principal instanceof Users) {
-           return ResponseEntity.ok((Users) principal);
-       } else {
-           return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-       }
-     }
+        if (principal instanceof Users) {
+            return ResponseEntity.ok((Users) principal);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
     /** Register a new user */
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Users user) {
-        if (user.getPhoneNumbers() == null || user.getPhoneNumbers().isEmpty()) {
-            return ResponseEntity.badRequest().body("Phone numbers is required.");
+        if (user.getPhonenumber() == null || user.getPhonenumber().isEmpty()) {
+            return ResponseEntity.badRequest().body("Phone number is required.");
         }
-        
+
         String result = service.register(user);
         return ResponseEntity.ok(result);
     }
@@ -160,17 +159,17 @@ public class UserController {
     /** Validate OTP and register user */
     @PostMapping("/validate-otp")
     public ResponseEntity<String> validateOtp(@RequestBody Users details) {
-        String phoneNumbers = details.getPhoneNumbers().trim();
-        if (!phoneNumbers.startsWith("+234")) {
-            phoneNumbers = "+234" + phoneNumbers.replaceFirst("^0", "");
+        String phonenumber = details.getPhonenumber().trim();
+        if (!phonenumber.startsWith("+234")) {
+            phonenumber = "+234" + phonenumber.replaceFirst("^0", "");
         }
-        details.setPhoneNumbers(phoneNumbers);
+        details.setPhonenumber(phonenumber);
 
-        if (details.getOtp() == null || details.getPhoneNumbers() == null) {
-            return ResponseEntity.badRequest().body("OTP and phone numbers are required");
+        if (details.getOtp() == null || details.getPhonenumber() == null) {
+            return ResponseEntity.badRequest().body("OTP and phone number are required");
         }
 
-        boolean isValid = otpService.validateOtp(details.getPhoneNumbers(), details.getOtp());
+        boolean isValid = otpService.validateOtp(details.getPhonenumber(), details.getOtp());
         if (isValid) {
             service.saveUser(details);
             return ResponseEntity.ok("User registered successfully.");
@@ -179,34 +178,35 @@ public class UserController {
         }
     }
 
-    /** Get user details by phone numbers */
-    @GetMapping("/{phoneNumbers}")
+    /** Get user details by phone number */
+    @GetMapping("/{phonenumber}")
 
-    public ResponseEntity<Users> getReceiverByPhoneNumbers(@PathVariable String phoneNumbers) {
-        Users details = service.getDetails(phoneNumbers);
+    public ResponseEntity<Users> getReceiverByPhonenumber(@PathVariable String phonenumber) {
+        Users details = service.getDetails(phonenumber);
         return ResponseEntity.ok(details);
-     }
+    }
 
     /** Update user details */
-    @PutMapping("/admin/{phoneNumbers}/update/toheeb")
+    @PutMapping("/admin/{phonenumber}/update/toheeb")
 
-    public ResponseEntity<Users> updateReceiverDetails(@PathVariable String phoneNumbers,
+    public ResponseEntity<Users> updateReceiverDetails(@PathVariable String phonenumber,
             @RequestBody Users newDetails) {
-        Users updatedDetails = service.updateProduct(phoneNumbers, newDetails);
+        Users updatedDetails = service.updateProduct(phonenumber, newDetails);
         return ResponseEntity.ok(updatedDetails);
     }
 
-    /** Delete user by phone numbers */
-    @DeleteMapping("admin/{phoneNumbers}")
+    /** Delete user by phone number */
+    @DeleteMapping("admin/{phonenumber}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<String> deleteReceiver(@PathVariable String phoneNumbers) {
-        service.deletes(phoneNumbers);
+    public ResponseEntity<String> deleteReceiver(@PathVariable String phonenumber) {
+        service.deletes(phonenumber);
         return ResponseEntity.ok("Receiver deleted successfully.");
     }
-    @GetMapping("/{phone}")
-    public Users getUserWithDetectors(@PathVariable String phone) {
-    Users user = usersRepository.findById(phone)
-    .orElseThrow(() -> new RuntimeException("User not found"));
-    return user;
-    }
+
+    // @GetMapping("/{phone}")
+    // public Users getUserWithDetectors(@PathVariable String phone) {
+    //     Users user = usersRepository.findById(phone)
+    //             .orElseThrow(() -> new RuntimeException("User not found"));
+    //     return user;
+    // }
 }
