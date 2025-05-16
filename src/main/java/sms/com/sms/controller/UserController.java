@@ -42,7 +42,7 @@ public class UserController {
 
     private final JwtUtil jwtUtil;
 
-    @Autowired
+
     public UserController(
             UserServiceImpl service,
             UsersRepository usersRepository,

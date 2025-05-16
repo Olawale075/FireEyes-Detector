@@ -1,18 +1,15 @@
 package sms.com.sms.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sms.com.sms.config.SecurityConfig;
-// import sms.com.sms.dto.UserDTO;
 import sms.com.sms.enums.UserRole;
 import sms.com.sms.exception.ResourceNotFoundException;
-// import sms.com.sms.mapper.UserMapper;
 import sms.com.sms.model.Users;
 import sms.com.sms.repository.UsersRepository;
 
@@ -21,14 +18,15 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UsersRepository repository;
+    private final UsersRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private SecurityConfig securityConfig;
-
-    // Temporary in-memory storage (for OTP or pre-verification)
     private final Map<String, Users> tempUserStorage = new HashMap<>();
+
+    public UserServiceImpl(UsersRepository repository, PasswordEncoder passwordEncoder) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public boolean isPhonenumberRegistered(String phonenumber) {
@@ -65,7 +63,7 @@ public class UserServiceImpl implements UserService {
             details.setRole(UserRole.ROLE_USER);
         }
 
-        details.setPassword(securityConfig.passwordEncoder().encode(details.getPassword()));
+        details.setPassword(passwordEncoder.encode(details.getPassword()));
         repository.save(details);
         return "User registered successfully.";
     }
@@ -106,25 +104,12 @@ public class UserServiceImpl implements UserService {
         return repository.save(existingDetails);
     }
 
+    public List<Users> getAllUsersWithGasDetectors() {
+        return repository.findAll();
+    }
 
-  
-
-     public List<Users> getAllUsersWithGasDetectors() {
-         List<Users> users = repository.findAll();
-     return users;
-     }
-
-    //  @Override
-    //  public Page<UserDTO> getAllUsers(Pageable pageable) {
-    //      return repository.findAll(pageable)
-    //                       .map(userMapper::toDto);
-    //  }
-
-
-     public Users getDetails(String phonenumber) {
-         Users UserD = repository.findById(phonenumber)
-                 .orElseThrow(() -> new ResourceNotFoundException("User with phone number " + phonenumber + " not found"));
-         return UserD;
-     }
-    
+    public Users getDetails(String phonenumber) {
+        return repository.findById(phonenumber)
+                .orElseThrow(() -> new ResourceNotFoundException("User with phone number " + phonenumber + " not found"));
+    }
 }
