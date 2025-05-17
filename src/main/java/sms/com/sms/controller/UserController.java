@@ -36,7 +36,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 public class UserController {
 
     private final UserServiceImpl service;
-    private final UsersRepository usersRepository;
     private final OTPService otpService;
     private final AuthenticationManager authenticationManager;
 
@@ -45,12 +44,10 @@ public class UserController {
 
     public UserController(
             UserServiceImpl service,
-            UsersRepository usersRepository,
             OTPService otpService,
             AuthenticationManager authenticationManager,
             JwtUtil jwtUtil) {
         this.service = service;
-        this.usersRepository = usersRepository;
         this.otpService = otpService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -87,6 +84,9 @@ public class UserController {
     public ResponseEntity<String> register(@RequestBody Users user) {
         if (user.getPhonenumber() == null || user.getPhonenumber().isEmpty()) {
             return ResponseEntity.badRequest().body("Phone number is required.");
+        }
+        else if (user.getEmail()==null || user.getEmail().isEmpty()){
+             return ResponseEntity.badRequest().body("Email is required.");
         }
 
         String result = service.register(user);

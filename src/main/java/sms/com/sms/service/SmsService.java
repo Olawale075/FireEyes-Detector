@@ -9,7 +9,7 @@ import sms.com.sms.dto.SmsRequest;
 @Service
 public class SmsService {
 
-    private final String TERMII_SMS_URL = "https://api.ng.termii.com/api/sms/send";
+    private final String TERMII_SMS_URL = "https://api.ng.termii.com/";
 
     public String sendSms(String to, String message) {
         RestTemplate restTemplate = new RestTemplate();

@@ -6,19 +6,17 @@ public class UserDTO {
     private String phoneNumbers;
     private String name;
     private String email;
-    private Boolean isVerified;
-    private String role;
+   
     private String notificationPreference;
     private Set<String> gasDetectorMacs;
 
 
     public UserDTO() {}
-    public UserDTO(String phoneNumbers, String name, String email, Boolean isVerified, String role, String notificationPreference, Set<String> gasDetectorMacs) {
+    public UserDTO(String phoneNumbers, String name, String email,  String notificationPreference, Set<String> gasDetectorMacs) {
         this.phoneNumbers = phoneNumbers;
         this.name = name;
         this.email = email;
-        this.isVerified = isVerified;
-        this.role = role;
+     
         this.notificationPreference = notificationPreference;
         this.gasDetectorMacs = gasDetectorMacs;
     }
@@ -47,21 +45,6 @@ public class UserDTO {
         this.email = email;
     }
 
-    public Boolean getIsVerified() {
-        return isVerified;
-    }
-
-    public void setIsVerified(Boolean isVerified) {
-        this.isVerified = isVerified;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     public String getNotificationPreference() {
         return notificationPreference;
