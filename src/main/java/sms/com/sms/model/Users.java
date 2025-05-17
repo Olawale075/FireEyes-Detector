@@ -81,8 +81,13 @@ public class Users implements UserDetails {
     public String getOtp() {
         return otp;
     }
-
-    public void setOtp(String otp) {
+public String getEmail(){
+    return email;
+} 
+public String setEmail( String email){
+    return email;
+}
+void setOtp(String otp) {
         this.otp = otp;
     }
 
