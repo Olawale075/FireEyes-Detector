@@ -86,6 +86,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("Phone number is required.");
         }
         else if (user.getEmail()==null || user.getEmail().isEmpty()){
+            System.out.println(user);
              return ResponseEntity.badRequest().body("Email is required.");
         }
 
