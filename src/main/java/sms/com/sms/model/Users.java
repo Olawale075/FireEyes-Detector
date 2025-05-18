@@ -54,11 +54,7 @@ public class Users implements UserDetails {
     private String otp;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_gas_detector",
-        joinColumns = @JoinColumn(name = "user_phonenumber", referencedColumnName = "phone_number"),
-        inverseJoinColumns = @JoinColumn(name = "gas_detector_mac", referencedColumnName = "mac_address")
-    )
+    @JoinTable(name = "user_gas_detector", joinColumns = @JoinColumn(name = "user_phonenumber", referencedColumnName = "phone_number"), inverseJoinColumns = @JoinColumn(name = "gas_detector_mac", referencedColumnName = "mac_address"))
     private Set<GasDetector> gasDetectors = new HashSet<>();
 
     public void addGasDetector(GasDetector gasDetector) {
@@ -69,10 +65,11 @@ public class Users implements UserDetails {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createDateTime;
+
     public String getPhonenumber() {
         return phonenumber;
     }
-    
+
     @UpdateTimestamp
     private LocalDateTime updateDateTime;
 
@@ -81,13 +78,14 @@ public class Users implements UserDetails {
     public String getOtp() {
         return otp;
     }
-public String getEmail(){
-    return email;
-} 
-public String setEmail( String email){
-    return email;
-}
-void setOtp(String otp) {
+public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    void setOtp(String otp) {
         this.otp = otp;
     }
 
@@ -105,7 +103,7 @@ void setOtp(String otp) {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-     public UserRole getRole() {
+    public UserRole getRole() {
         return role;
     }
 
@@ -137,22 +135,21 @@ void setOtp(String otp) {
     public boolean isEnabled() {
         return true;
     }
-  
-    
+
     public String getPassword() {
         return password;
     }
-    
+
     public void setPassword(String password) {
         this.password = password;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }
