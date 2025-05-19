@@ -25,7 +25,7 @@ import sms.com.sms.dto.AuthResponse;
 import sms.com.sms.model.Users;
 import sms.com.sms.repository.UsersRepository;
 
-import sms.com.sms.service.OtpService;
+import sms.com.sms.service.OTPService;
 import sms.com.sms.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 public class UserController {
 
     private final UserServiceImpl service;
-    private final OtpService otpService;
+    private final OTPService otpService;
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtil jwtUtil;
@@ -45,7 +45,7 @@ public class UserController {
 
     public UserController(
             UserServiceImpl service,
-            OtpService otpService,
+            OTPService otpService,
             AuthenticationManager authenticationManager,
             JwtUtil jwtUtil) {
         this.service = service;
