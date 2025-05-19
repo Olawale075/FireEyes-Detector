@@ -27,6 +27,7 @@ import sms.com.sms.repository.UsersRepository;
 import sms.com.sms.service.OTPService;
 
 import sms.com.sms.service.UserServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
@@ -57,6 +58,8 @@ public class UserController {
     private static final int MAX_VALIDATED_USERS = 20;
 
     /** Get all users */
+    
+    @Operation(summary = "Get all the details of the Users")
     @GetMapping("/admin/")
     public List<Users> getAllUsers() {
         return service.getAllUsersWithGasDetectors();
@@ -67,6 +70,8 @@ public class UserController {
     // // return service.getAllUsers(pageable);
 
     /** Get logged-in user details */
+    
+    @Operation(summary = "Get all the details of the Users")
     @GetMapping("/admin/details")
 
     public ResponseEntity<Users> getUsers() {
@@ -80,6 +85,7 @@ public class UserController {
     }
 
     /** Register a new user */
+    @Operation(summary = "Register a new User")
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody Users user) {
         if (user.getPhonenumber() == null || user.getPhonenumber().isEmpty()) {
@@ -95,6 +101,7 @@ public class UserController {
     }
 
     /** Authenticate user and return JWT token */
+    @Operation(summary = "Log in with PhoneNumber and PassWord")
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {
@@ -119,7 +126,7 @@ public class UserController {
             return ResponseEntity.status(403).body("Forbidden" + e.getMessage());
         }
     }
-
+@Operation(summary = "Checking the Token")
     @GetMapping("/test")
     public ResponseEntity<String> testToken(@RequestHeader(value = "Authorization", required = false) String token) {
         try {
@@ -134,6 +141,7 @@ public class UserController {
     }
 
     /** Send fire detection alert */
+    @Operation(summary = "Sending SMS to all user not working yet")
     @PostMapping("/send-message-to-all-for-fireDetector")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> sendMessageToAllForFireDetector() {
@@ -147,6 +155,7 @@ public class UserController {
     }
 
     /** Send gas detection alert */
+      @Operation(summary = "Sending SMS to all user not working yet")
     @PostMapping("/send-message-to-all-for-GasDetector")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> sendMessageToAllForGasDetector() {
@@ -158,6 +167,7 @@ public class UserController {
     }
 
     /** Validate OTP and register user */
+      @Operation(summary = "Validate the OTP")
     @PostMapping("/validate-otp")
     public ResponseEntity<String> validateOtp(@RequestBody Users details) {
         String phonenumber = details.getPhonenumber().trim();
@@ -180,6 +190,7 @@ public class UserController {
     }
 
     /** Get user details by phone number */
+      @Operation(summary = "Get the User with the Phone Numbar")
     @GetMapping("/{phonenumber}")
 
     public ResponseEntity<Users> getReceiverByPhonenumber(@PathVariable String phonenumber) {
@@ -188,7 +199,8 @@ public class UserController {
     }
 
     /** Update user details */
-    @PutMapping("/admin/{phonenumber}/update/toheeb")
+      @Operation(summary = "Update the user using the PhoneNumbar ")
+    @PutMapping("/admin/{phonenumber}/update")
 
     public ResponseEntity<Users> updateReceiverDetails(@PathVariable String phonenumber,
             @RequestBody Users newDetails) {
@@ -197,6 +209,7 @@ public class UserController {
     }
 
     /** Delete user by phone number */
+      @Operation(summary = "Delete the the User using the phonenumber ")
     @DeleteMapping("admin/{phonenumber}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> deleteReceiver(@PathVariable String phonenumber) {
