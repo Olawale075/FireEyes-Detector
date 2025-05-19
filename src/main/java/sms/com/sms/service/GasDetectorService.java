@@ -2,6 +2,7 @@ package sms.com.sms.service;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,9 +22,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GasDetectorService {
 
-    private final GasDetectorRepository detectorRepository;
-    private final UsersRepository usersRepository;
-    private final DetectorMapper detectorMapper;
+    @Autowired
+    private  GasDetectorRepository detectorRepository;
+    @Autowired
+    private  UsersRepository usersRepository;
+    @Autowired
+    private  DetectorMapper detectorMapper;
 
     public DetectorDTO create(DetectorDTO dto) {
         GasDetector detector = detectorMapper.toEntity(dto);
