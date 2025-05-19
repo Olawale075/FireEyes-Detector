@@ -15,6 +15,7 @@ import sms.com.sms.model.Users;
 @EnableJpaRepositories
 public interface GasDetectorRepository extends JpaRepository<GasDetector, String> {
 //List<GasDetector> findByUsers(Users user);  
-  
+ // Optional<Users> findByPhonenumber(String phoneNumber);
+
     ResponseEntity<GasDetector> findByMacAddress(String macAddress);// Ensure the field name matches `users`
 }

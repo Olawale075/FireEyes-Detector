@@ -1,46 +1,88 @@
 package sms.com.sms.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-// import sms.com.sms.dto.DetectorDTO;
-// // import sms.com.sms.dto.UserDTO;
-// import sms.com.sms.mapper.DetectorMapper;
+import sms.com.sms.dto.DetectorDTO;
+import sms.com.sms.mapper.DetectorMapper;
 import sms.com.sms.model.GasDetector;
 import sms.com.sms.model.Users;
 import sms.com.sms.repository.GasDetectorRepository;
 import sms.com.sms.repository.UsersRepository;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
-@Transactional // Ensures atomic operations during assignment
+@RequiredArgsConstructor
 public class GasDetectorService {
 
-    private static final Logger logger = LoggerFactory.getLogger(GasDetectorService.class);
+    private final GasDetectorRepository detectorRepository;
+    private final UsersRepository usersRepository;
+    private final DetectorMapper detectorMapper;
 
-    @Autowired
-    private GasDetectorRepository gasDetectorRepository;
+    public DetectorDTO create(DetectorDTO dto) {
+        GasDetector detector = detectorMapper.toEntity(dto);
 
-    @Autowired
-    private UsersRepository usersRepository;
-    
-    public String assignDetectorToUser(String phoneNumber, String macAddress) {
+        // Link Users by phone numbers
+        if (dto.getPhoneNumbers() != null) {
+            Set<Users> users = dto.getPhoneNumbers().stream()
+                    .map(usersRepository::findByPhonenumber)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toSet());
+
+            detector.setUsers(users);
+        }
+
+        return detectorMapper.toDto(detectorRepository.save(detector));
+    }
+
+    public List<DetectorDTO> findAll() {
+        return detectorRepository.findAll().stream()
+                .map(detectorMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public Optional<DetectorDTO> findByMac(String mac) {
+        return detectorRepository.findById(mac)
+                .map(detectorMapper::toDto);
+    }
+
+    public DetectorDTO update(String mac, DetectorDTO dto) {
+        return detectorRepository.findById(mac).map(existing -> {
+            existing.setLocation(dto.getLocation());
+            existing.setStatus(dto.getStatus());
+            existing.setTemperature(dto.getTemperature());
+            existing.setHumidity(dto.getHumidity());
+
+            if (dto.getPhoneNumbers() != null) {
+                Set<Users> users = dto.getPhoneNumbers().stream()
+                        .map(usersRepository::findByPhonenumber)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .collect(Collectors.toSet());
+                existing.setUsers(users);
+            }
+
+            return detectorMapper.toDto(detectorRepository.save(existing));
+        }).orElseThrow(() -> new RuntimeException("Detector not found"));
+    }
+
+    public void delete(String mac) {
+        detectorRepository.deleteById(mac);
+    }
+     public String assignDetectorToUser(String phoneNumber, String macAddress) {
         // logger.info("Assigning detector [{}] to user [{}]", macAddress, phoneNumber);
 
         Users user = usersRepository.findById(phoneNumber)
                 .orElseThrow(() -> new RuntimeException("Phone number not found"));
 
-        GasDetector gasDetector = gasDetectorRepository.findById(macAddress)
+        GasDetector gasDetector = detectorRepository.findById(macAddress)
                 .orElseThrow(() -> new RuntimeException("Gas detector not found"));
 
         if (user.getGasDetectors().contains(gasDetector)) {
@@ -52,49 +94,8 @@ public class GasDetectorService {
         Users details =usersRepository.save(user);
         return"Successfully Link";
     }
-
-    /**
-     * Get a gas detector by its MAC address.
-     */
-    public ResponseEntity<GasDetector> getDetector(String macAddress) {
-       try {
-        ResponseEntity<GasDetector> detector = gasDetectorRepository.findByMacAddress(macAddress);
-
-        if (detector == null) {
-            logger.warn("Gas detector with MAC address [{}] not found", macAddress);
-            throw new RuntimeException("MAC address not found");
-        }
-
-        return detector;
-       } catch (Exception e) {
-        throw new RuntimeException("MAC address not found"+ e.getMessage());
-       } 
+     public Page<DetectorDTO> getAllPaged(Pageable pageable) {
+        Page<GasDetector> detectors = detectorRepository.findAll(pageable);
+        return detectors.map(detectorMapper::toDto);
     }
-
-    /**
-     * Register a new gas detector.
-     */
-    public ResponseEntity<String> registerDetector(GasDetector gasDetector) {
-        try {
-            gasDetectorRepository.save(gasDetector);
-            logger.info("Registered gas detector with MAC address [{}]", gasDetector.getMacAddress());
-            return ResponseEntity.ok("Smoke Detector Registered.");
-        } catch (Exception e) {
-            logger.error("Error registering detector: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Something went wrong: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Get all gas detectors (for authenticated admins).
-     */
- 
-     public List<GasDetector> getAllGasDetectors() {
-        List<GasDetector> gasDetectors = gasDetectorRepository.findAll();
-        return gasDetectors; // ✅ Collect the results correctly
-    }
-    
-
-    }
-
+}
