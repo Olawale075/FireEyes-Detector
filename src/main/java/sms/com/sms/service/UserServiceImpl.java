@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private SmsService smsService;
 
     @Autowired
-    private OtpService otpService;
+    private OTPService otpService;
 
     private final Map<String, Users> tempUserStorage = new HashMap<>();
 

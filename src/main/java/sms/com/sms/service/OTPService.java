@@ -8,7 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class OtpService {
+public class OTPService {
 
     private static final Map<String, OtpEntry> otpCache = new ConcurrentHashMap<>();
     private static final int EXPIRE_MINUTES = 5;
