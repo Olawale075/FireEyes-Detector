@@ -6,8 +6,8 @@ public class DetectorDTO {
     private String macAddress;
     private String location;
     private Boolean status;
-    private Double temperature;
-    private Double humidity;
+    private Double temperature =0.0;
+    private Double humidity =0.0;
     private Set<String> phoneNumbers;
 
     public DetectorDTO() {}
