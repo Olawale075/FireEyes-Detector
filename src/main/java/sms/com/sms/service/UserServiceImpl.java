@@ -1,7 +1,9 @@
 package sms.com.sms.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,10 +20,15 @@ import java.util.*;
 
 @Service
 
-public class UserServiceImpl implements UserService{
-    
+public class UserServiceImpl implements UserService {
+
     private final UsersRepository repository;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private SmsService smsService;
+
+    @Autowired
+    private OtpService otpService;
 
     private final Map<String, Users> tempUserStorage = new HashMap<>();
 
@@ -45,13 +52,50 @@ public class UserServiceImpl implements UserService{
         return tempUserStorage.get(phonenumber);
     }
 
+    
+    public String sendOtp(String phoneNumber) {
+        String otp = otpService.generateOtp(phoneNumber);
+        String message = "Your OTP is: " + otp;
+        return smsService.sendSms(phoneNumber, message);
+    }
+
+    public boolean verifyOtpAndCreateUser(String phoneNumber, String inputOtp, String name) {
+        boolean valid = otpService.verifyOtp(phoneNumber, inputOtp);
+        if (valid) {
+            Users user = new Users();
+            user.setPhonenumber(phoneNumber);
+            user.setName(name);
+            repository.save(user);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     @Transactional
-    public Users saveUser(Users user) {
-        if (user.getPhonenumber() == null) {
+    public  ResponseEntity<String> saveUser(Users user) {
+
+         String phoneNumber = user.getPhonenumber();
+         String inputOtp = user.getOtp();
+        if ( phoneNumber == null ) {
+
             throw new IllegalArgumentException("Phone number is required");
         }
-        return repository.save(user);
+           if (!phoneNumber.startsWith("234")) {
+            phoneNumber = "+234" + phoneNumber.replaceFirst("^0", "");
+        }
+        if ( inputOtp == null ) {
+
+            throw new IllegalArgumentException("OTP is required");
+        }
+     boolean valid = otpService.verifyOtp(phoneNumber, inputOtp);
+        if (valid) {
+          
+            repository.save(user);
+           return    ResponseEntity.ok("User registered successfully.");
+        }
+          return    ResponseEntity.ok("\"Fail to register user");
+     
     }
 
     @Override
@@ -112,6 +156,7 @@ public class UserServiceImpl implements UserService{
 
     public Users getDetails(String phonenumber) {
         return repository.findById(phonenumber)
-                .orElseThrow(() -> new ResourceNotFoundException("User with phone number " + phonenumber + " not found"));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("User with phone number " + phonenumber + " not found"));
     }
 }

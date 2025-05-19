@@ -6,20 +6,14 @@ public class UserDTO {
     private String phoneNumbers;
     private String name;
     private String email;
-   
+    private Boolean isVerified;
+    private String role;
+    private String password;
+    private String otp;
     private String notificationPreference;
-    private Set<String> gasDetectorMacs;
-
+    private Set<String> macAddress;
 
     public UserDTO() {}
-    public UserDTO(String phoneNumbers, String name, String email,  String notificationPreference, Set<String> gasDetectorMacs) {
-        this.phoneNumbers = phoneNumbers;
-        this.name = name;
-        this.email = email;
-     
-        this.notificationPreference = notificationPreference;
-        this.gasDetectorMacs = gasDetectorMacs;
-    }
 
     public String getPhoneNumbers() {
         return phoneNumbers;
@@ -45,6 +39,37 @@ public class UserDTO {
         this.email = email;
     }
 
+    public Boolean getIsVerified() {
+        return isVerified;
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getOtp() {
+        return otp;
+    }
+
+    public void setOtp(String otp) {
+        this.otp = otp;
+    }
 
     public String getNotificationPreference() {
         return notificationPreference;
@@ -54,11 +79,11 @@ public class UserDTO {
         this.notificationPreference = notificationPreference;
     }
 
-    public Set<String> getGasDetectorMacs() {
-        return gasDetectorMacs;
+    public Set<String> getmacAddress() {
+        return macAddress;
     }
 
-    public void setGasDetectorMacs(Set<String> gasDetectorMacs) {
-        this.gasDetectorMacs = gasDetectorMacs;
+    public void setmacAddress(Set<String> macAddress) {
+        this.macAddress = macAddress;
     }
 }

@@ -24,8 +24,8 @@ import sms.com.sms.dto.AuthResponse;
 //  import sms.com.sms.dto.UserDTO;
 import sms.com.sms.model.Users;
 import sms.com.sms.repository.UsersRepository;
-import sms.com.sms.service.OTPService;
 
+import sms.com.sms.service.OtpService;
 import sms.com.sms.service.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 public class UserController {
 
     private final UserServiceImpl service;
-    private final OTPService otpService;
+    private final OtpService otpService;
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtil jwtUtil;
@@ -45,7 +45,7 @@ public class UserController {
 
     public UserController(
             UserServiceImpl service,
-            OTPService otpService,
+            OtpService otpService,
             AuthenticationManager authenticationManager,
             JwtUtil jwtUtil) {
         this.service = service;
@@ -170,23 +170,10 @@ public class UserController {
       @Operation(summary = "Validate the OTP")
     @PostMapping("/validate-otp")
     public ResponseEntity<String> validateOtp(@RequestBody Users details) {
-        String phonenumber = details.getPhonenumber().trim();
-        if (!phonenumber.startsWith("+234")) {
-            phonenumber = "+234" + phonenumber.replaceFirst("^0", "");
-        }
-        details.setPhonenumber(phonenumber);
-
-        if (details.getOtp() == null || details.getPhonenumber() == null) {
-            return ResponseEntity.badRequest().body("OTP and phone number are required");
-        }
-
-        boolean isValid = otpService.validateOtp(details.getPhonenumber(), details.getOtp());
-        if (isValid) {
+      
             service.saveUser(details);
             return ResponseEntity.ok("User registered successfully.");
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid OTP.");
-        }
+        
     }
 
     /** Get user details by phone number */
@@ -215,6 +202,9 @@ public class UserController {
     public ResponseEntity<String> deleteReceiver(@PathVariable String phonenumber) {
         service.deletes(phonenumber);
         return ResponseEntity.ok("Receiver deleted successfully.");
+    }
+    public String sendOtp(@PathVariable String phonenumber ){
+        return service.sendOtp(phonenumber);
     }
 
     // @GetMapping("/{phone}")

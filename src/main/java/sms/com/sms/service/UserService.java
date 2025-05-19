@@ -1,5 +1,6 @@
 package sms.com.sms.service;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 // import sms.com.sms.dto.UserDTO;
@@ -11,7 +12,7 @@ public interface UserService extends UserDetailsService {
     boolean isPhonenumberRegistered(String phonenumber);
     void saveTempUser(Users user);
     Users findTempUser(String phonenumber);
-    Users saveUser(Users user);
+ ResponseEntity<String>saveUser(Users user);
     String register(Users details);
     void deletes(String phonenumber);
     //List<Users> getAllDetails();

@@ -15,7 +15,7 @@ public interface UserMapper {
 
     // Entity -> DTO mapping
     @Mapping(target = "phoneNumbers", source = "phonenumber")  // Map Users.phoneNumbers to UserDTO.phonenumber
-    @Mapping(target = "gasDetectorMacs", source = "gasDetectors", qualifiedByName = "mapDetectorsToMacs")
+    @Mapping(target = "macAddress", source = "gasDetectors", qualifiedByName = "mapDetectorsToMacs")
     UserDTO toDto(Users user);
 
     // DTO -> Entity mapping (ignore gasDetectors for manual handling)
