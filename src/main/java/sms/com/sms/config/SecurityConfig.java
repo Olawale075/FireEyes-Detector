@@ -46,6 +46,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtF
             .requestMatchers("/user/register", "/user/auth/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // ✅ Public Access
             .requestMatchers("/user/admin/**").hasAuthority("ROLE_ADMIN") 
             .requestMatchers("/gas-detectors/**").hasAuthority("ROLE_ADMIN") 
+             .requestMatchers("/gas-detectors/user/admin/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") 
             .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // ✅ Use hasAuthority
             .requestMatchers("/user/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") // ✅ Use hasAnyAuthority
             .anyRequest().authenticated() // ✅ Other endpoints require authentication

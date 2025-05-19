@@ -95,9 +95,8 @@ public class UserController {
             System.out.println(user);
              return ResponseEntity.badRequest().body("Email is required.");
         }
-
-        String result = service.register(user);
-        return ResponseEntity.ok(result);
+return service.verifyOtpAndCreateUser(user);
+       
     }
 
     /** Authenticate user and return JWT token */
@@ -171,7 +170,7 @@ public class UserController {
     @PostMapping("/validate-otp")
     public ResponseEntity<String> validateOtp(@RequestBody Users details) {
       
-            service.saveUser(details);
+            service.verifyOtpAndCreateUser(details);
             return ResponseEntity.ok("User registered successfully.");
         
     }
@@ -203,6 +202,8 @@ public class UserController {
         service.deletes(phonenumber);
         return ResponseEntity.ok("Receiver deleted successfully.");
     }
+       @Operation(summary = "Sending OTP to the New user ")
+   @PostMapping("user/admin/{phonenumber}")
     public String sendOtp(@PathVariable String phonenumber ){
         return service.sendOtp(phonenumber);
     }

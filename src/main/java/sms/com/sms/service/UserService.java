@@ -12,8 +12,7 @@ public interface UserService extends UserDetailsService {
     boolean isPhonenumberRegistered(String phonenumber);
     void saveTempUser(Users user);
     Users findTempUser(String phonenumber);
- ResponseEntity<String>saveUser(Users user);
-    String register(Users details);
+  ResponseEntity<String>verifyOtpAndCreateUser(Users user);
     void deletes(String phonenumber);
     //List<Users> getAllDetails();
      Users getDetails(String phonenumber);

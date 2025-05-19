@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public  ResponseEntity<String> saveUser(Users user) {
+    public  ResponseEntity<String>verifyOtpAndCreateUser(Users user) {
 
          String phoneNumber = user.getPhonenumber();
          String inputOtp = user.getOtp();
@@ -90,29 +90,23 @@ public class UserServiceImpl implements UserService {
         }
      boolean valid = otpService.verifyOtp(phoneNumber, inputOtp);
         if (valid) {
-          
-            repository.save(user);
+            if (isPhonenumberRegistered(user.getPhonenumber())) {
+            return   ResponseEntity.ok("Phone number already registered.");
+        }
+
+        if (user.getRole() == null) {
+            user.setRole(UserRole.ROLE_USER);
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        repository.save(user);
            return    ResponseEntity.ok("User registered successfully.");
         }
           return    ResponseEntity.ok("\"Fail to register user");
      
     }
 
-    @Override
-    @Transactional
-    public String register(Users details) {
-        if (isPhonenumberRegistered(details.getPhonenumber())) {
-            return "Phone number already registered.";
-        }
-
-        if (details.getRole() == null) {
-            details.setRole(UserRole.ROLE_USER);
-        }
-
-        details.setPassword(passwordEncoder.encode(details.getPassword()));
-        repository.save(details);
-        return "User registered successfully.";
-    }
+    
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -158,5 +152,6 @@ public class UserServiceImpl implements UserService {
         return repository.findById(phonenumber)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("User with phone number " + phonenumber + " not found"));
+    
     }
 }
