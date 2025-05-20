@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
             to = "234" + to.replaceFirst("^0", "");
         }
         String otp = otpService.generateOtp(to);
-        String message = "Your OTP is: " + otp;
+        String message ="Dear User your Verification Pin is "+ otp +" Valid for 5 minutes, one-time use only.(FireEyes)";
         return smsService.sendSms(to, message);
     }
 
