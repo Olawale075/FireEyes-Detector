@@ -203,7 +203,7 @@ return service.verifyOtpAndCreateUser(user);
         return ResponseEntity.ok("Receiver deleted successfully.");
     }
        @Operation(summary = "Sending OTP to the New user ")
-   @PostMapping("user/admin/{phonenumber}")
+   @PostMapping("sendOtp/{phonenumber}")
     public String sendOtp(@PathVariable String to){
         return service.sendOtp(to);
     }
