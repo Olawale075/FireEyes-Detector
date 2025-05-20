@@ -166,9 +166,9 @@ return service.verifyOtpAndCreateUser(user);
     }
 
     /** Validate OTP and register user */
-      @Operation(summary = "Validate the OTP")
+      @Operation(summary = "verifyOtpAndCreateUser")
     @PostMapping("/validate-otp")
-    public ResponseEntity<String> validateOtp(@RequestBody Users details) {
+    public ResponseEntity<String> verifyOtpAndCreateUser(@RequestBody Users details) {
       
             service.verifyOtpAndCreateUser(details);
             return ResponseEntity.ok("User registered successfully.");

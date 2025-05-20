@@ -66,7 +66,8 @@ public class UserServiceImpl implements UserService {
             to = "234" + to.replaceFirst("^0", "");
         }
         String otp = otpService.generateOtp(to);
-        String message ="Dear User your Verification Pin is "+ otp +" Valid for 5 minutes, one-time use only.(FireEyes)";
+        String message = "Dear User your Verification Pin is " + otp
+                + " Valid for 5 minutes, one-time use only.(FireEyes)";
         return smsService.sendSms(to, message);
     }
 
@@ -87,21 +88,25 @@ public class UserServiceImpl implements UserService {
 
             throw new IllegalArgumentException("OTP is required");
         }
+        if (isPhonenumberRegistered(user.getPhonenumber())) {
+            return ResponseEntity.ok("Phone number already registered.");
+        }
+
+        if (user.getRole() == null) {
+            user.setRole(UserRole.ROLE_USER);
+        }
+        if (user.getEmail() == null || user.getEmail().isEmpty()) {
+            System.out.println(user);
+            return ResponseEntity.badRequest().body("Email is required.");
+        }
         boolean valid = otpService.verifyOtp(phoneNumber, inputOtp);
         if (valid) {
-            if (isPhonenumberRegistered(user.getPhonenumber())) {
-                return ResponseEntity.ok("Phone number already registered.");
-            }
-
-            if (user.getRole() == null) {
-                user.setRole(UserRole.ROLE_USER);
-            }
 
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             repository.save(user);
             return ResponseEntity.ok("User registered successfully.");
         }
-        return ResponseEntity.ok("\"Fail to register user");
+       else  return ResponseEntity.ok("\"Fail to register user");
 
     }
 
