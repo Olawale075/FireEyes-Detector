@@ -203,9 +203,9 @@ return service.verifyOtpAndCreateUser(user);
         return ResponseEntity.ok("Receiver deleted successfully.");
     }
        @Operation(summary = "Sending OTP to the New user ")
-   @PostMapping("sendOtp/{phonenumber}")
-    public String sendOtp(@PathVariable String phonenumber) {
-        return service.sendOtp(phonenumber);
+   @PostMapping("sendOtp/{to}")
+    public String sendOtp(@PathVariable String to) {
+        return service.sendOtp(to);
     }
 
     // @GetMapping("/{phone}")
