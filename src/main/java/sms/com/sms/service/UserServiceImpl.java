@@ -52,61 +52,58 @@ public class UserServiceImpl implements UserService {
         return tempUserStorage.get(phonenumber);
     }
 
-    
-    public String sendOtp(String phoneNumber) {
-        String otp = otpService.generateOtp(phoneNumber);
-        String message = "Your OTP is: " + otp;
-        return smsService.sendSms(phoneNumber, message);
-    }
+    public String sendOtp(String to) {
+        boolean exists = isPhonenumberRegistered(to);
+        if (exists) {
 
-    public boolean verifyOtpAndCreateUser(String phoneNumber, String inputOtp, String name) {
-        boolean valid = otpService.verifyOtp(phoneNumber, inputOtp);
-        if (valid) {
-            Users user = new Users();
-            user.setPhonenumber(phoneNumber);
-            user.setName(name);
-            repository.save(user);
-            return true;
+            throw new IllegalArgumentException("Phone number as been Used");
         }
-        return false;
+        if (to == null) {
+
+            throw new IllegalArgumentException("Phone number is required");
+        }
+        if (!to.startsWith("234")) {
+            to = "234" + to.replaceFirst("^0", "");
+        }
+        String otp = otpService.generateOtp(to);
+        String message = "Your OTP is: " + otp;
+        return smsService.sendSms(to, message);
     }
 
     @Override
     @Transactional
-    public  ResponseEntity<String>verifyOtpAndCreateUser(Users user) {
+    public ResponseEntity<String> verifyOtpAndCreateUser(Users user) {
 
-         String phoneNumber = user.getPhonenumber();
-         String inputOtp = user.getOtp();
-        if ( phoneNumber == null ) {
+        String phoneNumber = user.getPhonenumber();
+        String inputOtp = user.getOtp();
+        if (phoneNumber == null) {
 
             throw new IllegalArgumentException("Phone number is required");
         }
-           if (!phoneNumber.startsWith("234")) {
-            phoneNumber = "+234" + phoneNumber.replaceFirst("^0", "");
+        if (!phoneNumber.startsWith("234")) {
+            phoneNumber = "234" + phoneNumber.replaceFirst("^0", "");
         }
-        if ( inputOtp == null ) {
+        if (inputOtp == null) {
 
             throw new IllegalArgumentException("OTP is required");
         }
-     boolean valid = otpService.verifyOtp(phoneNumber, inputOtp);
+        boolean valid = otpService.verifyOtp(phoneNumber, inputOtp);
         if (valid) {
             if (isPhonenumberRegistered(user.getPhonenumber())) {
-            return   ResponseEntity.ok("Phone number already registered.");
-        }
+                return ResponseEntity.ok("Phone number already registered.");
+            }
 
-        if (user.getRole() == null) {
-            user.setRole(UserRole.ROLE_USER);
-        }
+            if (user.getRole() == null) {
+                user.setRole(UserRole.ROLE_USER);
+            }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        repository.save(user);
-           return    ResponseEntity.ok("User registered successfully.");
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            repository.save(user);
+            return ResponseEntity.ok("User registered successfully.");
         }
-          return    ResponseEntity.ok("\"Fail to register user");
-     
+        return ResponseEntity.ok("\"Fail to register user");
+
     }
-
-    
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -152,6 +149,6 @@ public class UserServiceImpl implements UserService {
         return repository.findById(phonenumber)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("User with phone number " + phonenumber + " not found"));
-    
+
     }
 }

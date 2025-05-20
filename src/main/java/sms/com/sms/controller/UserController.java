@@ -204,8 +204,8 @@ return service.verifyOtpAndCreateUser(user);
     }
        @Operation(summary = "Sending OTP to the New user ")
    @PostMapping("user/admin/{phonenumber}")
-    public String sendOtp(@PathVariable String phonenumber ){
-        return service.sendOtp(phonenumber);
+    public String sendOtp(@PathVariable String to){
+        return service.sendOtp(to);
     }
 
     // @GetMapping("/{phone}")
