@@ -84,21 +84,6 @@ public class UserController {
         }
     }
 
-    /** Register a new user */
-    @Operation(summary = "Register a new User")
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Users user) {
-        if (user.getPhonenumber() == null || user.getPhonenumber().isEmpty()) {
-            return ResponseEntity.badRequest().body("Phone number is required.");
-        }
-        else if (user.getEmail()==null || user.getEmail().isEmpty()){
-            System.out.println(user);
-             return ResponseEntity.badRequest().body("Email is required.");
-        }
-return service.verifyOtpAndCreateUser(user);
-       
-    }
-
     /** Authenticate user and return JWT token */
     @Operation(summary = "Log in with PhoneNumber and PassWord")
     @PostMapping("/auth/login")
