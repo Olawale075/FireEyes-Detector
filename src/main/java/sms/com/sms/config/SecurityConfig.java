@@ -43,7 +43,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtF
         .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ CORS Enabled
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // ✅ Stateless session
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/user/sendOtp/**", "/user/register", "/user/auth/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // ✅ Public Access
+            .requestMatchers("/user/sendOtp/**", "/user/verifyOtpAndCreateUser", "/user/auth/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll() // ✅ Public Access
             .requestMatchers("/user/admin/**").hasAuthority("ROLE_ADMIN") 
             .requestMatchers("/gas-detectors/**").hasAuthority("ROLE_ADMIN") 
              .requestMatchers("/gas-detectors/user/admin/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN") 

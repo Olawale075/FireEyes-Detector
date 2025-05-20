@@ -152,7 +152,7 @@ public class UserController {
 
     /** Validate OTP and register user */
       @Operation(summary = "verifyOtpAndCreateUser")
-    @PostMapping("/validate-otp")
+    @PostMapping("/verifyOtpAndCreateUser")
     public ResponseEntity<String> verifyOtpAndCreateUser(@RequestBody Users details) {
       
             service.verifyOtpAndCreateUser(details);
