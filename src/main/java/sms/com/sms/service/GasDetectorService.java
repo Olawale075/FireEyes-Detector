@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import sms.com.sms.dto.DetectorDTO;
 import sms.com.sms.mapper.DetectorMapper;
@@ -104,6 +105,9 @@ public class GasDetectorService {
         return detectors.map(detectorMapper::toDto);
     }
       public String notifyUsersByDetector(String macAddress, String message) {
+
+        try {
+            
         GasDetector detector = detectorRepository.findByMacAddress(macAddress);
         if(detector == null){
   return "Detector not found";
@@ -112,6 +116,11 @@ public class GasDetectorService {
 for (Users user : detector.getUsers()) {
             smsService.sendSms(user.getPhonenumber(), message);
         }
-        return "Gas detector already assigned to this user";
+        return "SMS sent to User";
+        } catch (Exception e) {
+               return "SMS not sent  to User";
+        }
     }
+
+    
 }

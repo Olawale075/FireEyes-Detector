@@ -97,12 +97,12 @@ public class RegisterGasDetector {
         return ResponseEntity.ok("Detector deleted successfully");
     }
      @PostMapping("/{macAddress}/notify")
-    public ResponseEntity<String> notifyUsers(
+    public String notifyUsers(
             @PathVariable String macAddress,
             @RequestBody Map<String, String> request
     ) {
         String message = request.get("message");
-        gasDetectorService.notifyUsersByDetector(macAddress, message);
-        return ResponseEntity.ok("SMS sent to all linked users.");
+      
+        return  gasDetectorService.notifyUsersByDetector(macAddress, message);
     }
 }
