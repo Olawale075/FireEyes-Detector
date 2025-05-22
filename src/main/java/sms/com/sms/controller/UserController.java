@@ -1,12 +1,15 @@
 package sms.com.sms.controller;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import sms.com.sms.config.JwtUtil;
 import sms.com.sms.dto.AuthRequest;
 import sms.com.sms.dto.AuthResponse;
+import sms.com.sms.dto.UserDTO;
 //  import sms.com.sms.dto.UserDTO;
 import sms.com.sms.model.Users;
 import sms.com.sms.repository.UsersRepository;
@@ -61,9 +65,11 @@ public class UserController {
     
     @Operation(summary = "Get all the details of the Users")
     @GetMapping("/admin/")
-    public List<Users> getAllUsers() {
-        return service.getAllUsersWithGasDetectors();
-    }
+ public ResponseEntity<Page<UserDTO>> getAllUsers( @PageableDefault(size = 10, sort = "createDateTime", direction = Sort.Direction.DESC) Pageable pageable) {
+
+    return ResponseEntity.ok(service.getAllUsers(pageable));
+     
+}
 
     // @GetMapping("/admin/page")
     // public Page<UserDTO> getAllUsers(Pageable pageable) {
@@ -153,39 +159,36 @@ public class UserController {
     /** Validate OTP and register user */
       @Operation(summary = "verifyOtpAndCreateUser")
     @PostMapping("/verifyOtpAndCreateUser")
-    public ResponseEntity<String> verifyOtpAndCreateUser(@RequestBody Users details) {
-      
-            service.verifyOtpAndCreateUser(details);
-            return ResponseEntity.ok("User registered successfully.");
-        
+      public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO dto) {
+        return ResponseEntity.ok(service.createUser(dto));
     }
 
     /** Get user details by phone number */
-      @Operation(summary = "Get the User with the Phone Numbar")
+      @Operation(summary = "Get the User with the Phone Number")
     @GetMapping("/{phonenumber}")
 
-    public ResponseEntity<Users> getReceiverByPhonenumber(@PathVariable String phonenumber) {
-        Users details = service.getDetails(phonenumber);
-        return ResponseEntity.ok(details);
+   public ResponseEntity<UserDTO> getUser(@PathVariable String phonenumber) {
+        Optional<UserDTO> user = service.getUserByPhone(phonenumber);
+        return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
-
     /** Update user details */
       @Operation(summary = "Update the user using the PhoneNumbar ")
-    @PutMapping("/admin/{phonenumber}/update")
-
-    public ResponseEntity<Users> updateReceiverDetails(@PathVariable String phonenumber,
-            @RequestBody Users newDetails) {
-        Users updatedDetails = service.updateProduct(phonenumber, newDetails);
-        return ResponseEntity.ok(updatedDetails);
+   
+ @PutMapping("/{phone}")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable String phonenumber, @RequestBody UserDTO dto) {
+        Optional<UserDTO> updated = service.updateUser(phonenumber, dto);
+        return updated.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     /** Delete user by phone number */
       @Operation(summary = "Delete the the User using the phonenumber ")
     @DeleteMapping("admin/{phonenumber}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<String> deleteReceiver(@PathVariable String phonenumber) {
-        service.deletes(phonenumber);
-        return ResponseEntity.ok("Receiver deleted successfully.");
+   public ResponseEntity<Void> deleteUser(@PathVariable String phone) {
+        if (service.deleteUser(phone)) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
        @Operation(summary = "Sending OTP to the New user ")
    @PostMapping("sendOtp/{to}")

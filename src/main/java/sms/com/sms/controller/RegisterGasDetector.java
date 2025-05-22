@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +17,7 @@ import sms.com.sms.dto.DetectorDTO;
 import sms.com.sms.service.GasDetectorService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/gas-detectors")
@@ -95,5 +95,14 @@ public class RegisterGasDetector {
     public ResponseEntity<?> deleteDetector(@PathVariable String macAddress) {
         gasDetectorService.delete(macAddress);
         return ResponseEntity.ok("Detector deleted successfully");
+    }
+     @PostMapping("/{macAddress}/notify")
+    public ResponseEntity<String> notifyUsers(
+            @PathVariable String macAddress,
+            @RequestBody Map<String, String> request
+    ) {
+        String message = request.get("message");
+        gasDetectorService.notifyUsersByDetector(macAddress, message);
+        return ResponseEntity.ok("SMS sent to all linked users.");
     }
 }

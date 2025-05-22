@@ -11,11 +11,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import sms.com.sms.dto.UserDTO;
+import sms.com.sms.enums.NotificationPreference;
 import sms.com.sms.enums.UserRole;
 import sms.com.sms.exception.ResourceNotFoundException;
+import sms.com.sms.mapper.UserMapper;
 import sms.com.sms.model.Users;
 import sms.com.sms.repository.UsersRepository;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.*;
 
 @Service
@@ -26,7 +31,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     @Autowired
     private SmsService smsService;
-
+   @Autowired
+    private UserMapper userMapper;
     @Autowired
     private OTPService otpService;
 
@@ -126,34 +132,47 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Override
-    @Transactional
-    public void deletes(String phonenumber) {
-        Users details = repository.findById(phonenumber)
-                .orElseThrow(() -> new ResourceNotFoundException("User with phone number not found"));
-        repository.delete(details);
+    //------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+public Page<UserDTO> getAllUsers(Pageable pageable) {
+    return repository.findAll(pageable)
+            .map(userMapper::toDto);
+}
+
+    public Optional<UserDTO> getUserByPhone(String phone) {
+        return repository.findById(phone)
+                .map(userMapper::toDto);
     }
 
-    @Override
-    @Transactional
-    public Users updateProduct(String phonenumber, Users newDetails) {
-        Users existingDetails = repository.findById(phonenumber)
-                .orElseThrow(() -> new ResourceNotFoundException("User with phone number not found"));
+    public UserDTO createUser(UserDTO dto) {
+        Users user = userMapper.toEntity(dto);
 
-        existingDetails.setName(newDetails.getName());
-        existingDetails.setPhonenumber(newDetails.getPhonenumber());
+        // Optional: set default values
+        user.setRole(sms.com.sms.enums.UserRole.ROLE_USER);
+        user.setIsVerified(true); // or false if you use OTP
+        if (dto.getNotificationPreference() != null) {
+            user.setNotificationPreference(NotificationPreference.valueOf(dto.getNotificationPreference()));
+        }
 
-        return repository.save(existingDetails);
+        return userMapper.toDto(repository.save(user));
     }
 
-    public List<Users> getAllUsersWithGasDetectors() {
-        return repository.findAll();
+    public Optional<UserDTO> updateUser(String phone, UserDTO dto) {
+        return repository.findById(phone).map(existing -> {
+            existing.setName(dto.getName());
+            existing.setEmail(dto.getEmail());
+            if (dto.getNotificationPreference() != null) {
+                existing.setNotificationPreference(NotificationPreference.valueOf(dto.getNotificationPreference()));
+            }
+            return userMapper.toDto(repository.save(existing));
+        });
     }
 
-    public Users getDetails(String phonenumber) {
-        return repository.findById(phonenumber)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("User with phone number " + phonenumber + " not found"));
-
+    public boolean deleteUser(String phone) {
+        if (repository.existsById(phone)) {
+            repository.deleteById(phone);
+            return true;
+        }
+        return false;
     }
 }

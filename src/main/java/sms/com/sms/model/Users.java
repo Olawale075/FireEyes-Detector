@@ -36,7 +36,22 @@ public class Users implements UserDetails {
 
     @Column(nullable = false, unique = true)
     private String email;
+    public boolean getIsVerified() {
+        return isVerified;
+    }
 
+    public void setIsVerified(boolean isVerified) {
+        this.isVerified = isVerified;
+    }
+
+    // Getter and Setter for notificationPreference
+    public NotificationPreference getNotificationPreference() {
+        return notificationPreference;
+    }
+
+    public void setNotificationPreference(NotificationPreference notificationPreference) {
+        this.notificationPreference = notificationPreference;
+    }
     @Column(nullable = false)
     private Boolean isVerified = false;
 

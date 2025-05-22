@@ -13,8 +13,7 @@ public interface UserService extends UserDetailsService {
     void saveTempUser(Users user);
     Users findTempUser(String phonenumber);
   ResponseEntity<String>verifyOtpAndCreateUser(Users user);
-    void deletes(String phonenumber);
+  boolean deleteUser(String phone) ;
     //List<Users> getAllDetails();
-     Users getDetails(String phonenumber);
-    Users updateProduct(String phonenumber, Users newDetails);
+     
 }

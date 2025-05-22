@@ -6,11 +6,7 @@ public class UserDTO {
     private String phoneNumbers;
     private String name;
     private String email;
-    private Boolean isVerified;
-    private String role;
-    private String password;
-    private String otp;
-    private String notificationPreference;
+   private String notificationPreference;
     private Set<String> macAddress;
 
     public UserDTO() {}
@@ -39,37 +35,6 @@ public class UserDTO {
         this.email = email;
     }
 
-    public Boolean getIsVerified() {
-        return isVerified;
-    }
-
-    public void setIsVerified(Boolean isVerified) {
-        this.isVerified = isVerified;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
 
     public String getNotificationPreference() {
         return notificationPreference;

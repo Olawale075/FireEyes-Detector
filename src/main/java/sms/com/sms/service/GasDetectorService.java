@@ -28,7 +28,8 @@ public class GasDetectorService {
     private  UsersRepository usersRepository;
     @Autowired
     private  DetectorMapper detectorMapper;
-
+     @Autowired
+  private SmsService smsService;
     public DetectorDTO create(DetectorDTO dto) {
         GasDetector detector = detectorMapper.toEntity(dto);
 
@@ -101,5 +102,16 @@ public class GasDetectorService {
      public Page<DetectorDTO> getAllPaged(Pageable pageable) {
         Page<GasDetector> detectors = detectorRepository.findAll(pageable);
         return detectors.map(detectorMapper::toDto);
+    }
+      public String notifyUsersByDetector(String macAddress, String message) {
+        GasDetector detector = detectorRepository.findByMacAddress(macAddress);
+        if(detector == null){
+  return "Detector not found";
+        }
+           
+for (Users user : detector.getUsers()) {
+            smsService.sendSms(user.getPhonenumber(), message);
+        }
+        return "Gas detector already assigned to this user";
     }
 }
