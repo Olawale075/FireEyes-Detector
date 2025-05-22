@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -64,12 +65,18 @@ public class UserController {
     /** Get all users */
     
     @Operation(summary = "Get all the details of the Users")
-    @GetMapping("/admin/")
- public ResponseEntity<Page<UserDTO>> getAllUsers( @PageableDefault(size = 10, sort = "createDateTime", direction = Sort.Direction.DESC) Pageable pageable) {
+@GetMapping("/admin/")
+public ResponseEntity<Page<UserDTO>> getAllUsers(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "createDateTime,DESC") String[] sort) {
+
+    Sort sortOrder = Sort.by(Sort.Direction.fromString(sort[1]), sort[0]);
+    Pageable pageable = PageRequest.of(page, size, sortOrder);
 
     return ResponseEntity.ok(service.getAllUsers(pageable));
-     
 }
+
 
     // @GetMapping("/admin/page")
     // public Page<UserDTO> getAllUsers(Pageable pageable) {
