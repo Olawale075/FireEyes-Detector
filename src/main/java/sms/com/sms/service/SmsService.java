@@ -20,7 +20,7 @@ public class SmsService {
 
         SmsRequest smsRequest = new SmsRequest();
         smsRequest.setTo(to);
-        smsRequest.setFrom("FireEyes"); // Must be approved by Termii
+        smsRequest.setFrom("N-Alert"); // Must be approved by Termii
         smsRequest.setSms(message);
         smsRequest.setType("plain"); // Usually required by Termii
         smsRequest.setChannel("generic"); // Usually required by Termii
