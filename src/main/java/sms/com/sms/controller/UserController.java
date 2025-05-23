@@ -166,8 +166,9 @@ public ResponseEntity<Page<UserDTO>> getAllUsers(
     /** Validate OTP and register user */
       @Operation(summary = "verifyOtpAndCreateUser")
     @PostMapping("/verifyOtpAndCreateUser")
-      public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO dto) {
-        return ResponseEntity.ok(service.createUser(dto));
+      public ResponseEntity<String> createUser(@RequestBody Users user) {
+     
+        return   service.verifyOtpAndCreateUser(user);
     }
 
     /** Get user details by phone number */

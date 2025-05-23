@@ -144,19 +144,7 @@ public Page<UserDTO> getAllUsers(Pageable pageable) {
                 .map(userMapper::toDto);
     }
 
-    public UserDTO createUser(UserDTO dto) {
-        Users user = userMapper.toEntity(dto);
-
-        // Optional: set default values
-        user.setRole(sms.com.sms.enums.UserRole.ROLE_USER);
-        user.setIsVerified(true); // or false if you use OTP
-        if (dto.getNotificationPreference() != null) {
-            user.setNotificationPreference(NotificationPreference.valueOf(dto.getNotificationPreference()));
-        }
-
-        return userMapper.toDto(repository.save(user));
-    }
-
+  
     public Optional<UserDTO> updateUser(String phone, UserDTO dto) {
         return repository.findById(phone).map(existing -> {
             existing.setName(dto.getName());
