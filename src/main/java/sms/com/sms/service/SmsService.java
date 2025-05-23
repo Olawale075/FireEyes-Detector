@@ -23,7 +23,7 @@ public class SmsService {
         smsRequest.setFrom("FireEyes"); // Must be approved by Termii
         smsRequest.setSms(message);
         smsRequest.setType("plain"); // Usually required by Termii
-        smsRequest.setChannel("generic"); // Usually required by Termii
+        smsRequest.setChannel("dnd"); // Usually required by Termii
         smsRequest.setApi_key(apiKey);
 
         HttpHeaders headers = new HttpHeaders();
